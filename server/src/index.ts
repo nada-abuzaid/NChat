@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
+import { loginController } from './controllers';
 
 const app = express();
 require('dotenv').config();
@@ -23,6 +24,8 @@ app.get('/api/multiavatar', async (req, res) => {
   res.send(imageResponse.data);
 });
 
+app.post('/api/auth/login', loginController);
+
 const server = app.listen(process.env.PORT, () =>
-  console.log(`Server started on ${process.env.PORT}`)
+  console.log(`Server started on http://localhost:${process.env.PORT}`)
 );
