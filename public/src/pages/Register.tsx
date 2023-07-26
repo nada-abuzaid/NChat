@@ -30,7 +30,7 @@ export default function Register() {
     if (localStorage.getItem(import.meta.env.REACT_APP_LOCALHOST_KEY!)) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
   const handleChange = (event: any) => {
     setValues({ ...values, [event.target.name]: event.target.value });
