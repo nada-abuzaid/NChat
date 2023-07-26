@@ -27,7 +27,7 @@ export default function Register() {
   });
 
   useEffect(() => {
-    if (localStorage.getItem(import.meta.env.REACT_APP_LOCALHOST_KEY!)) {
+    if (localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY!)) {
       navigate('/');
     }
   }, [navigate]);
@@ -74,14 +74,14 @@ export default function Register() {
         password,
       });
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions as any);
+      if (!data.data.length) {
+        toast.error(data.message, toastOptions as any);
       }
 
-      if (data.status === true) {
+      if (data.data.length) {
         localStorage.setItem(
-          import.meta.env.REACT_APP_LOCALHOST_KEY!,
-          JSON.stringify(data.user)
+          import.meta.env.VITE_LOCALHOST_KEY!,
+          JSON.stringify(data.data)
         );
         navigate('/');
       }

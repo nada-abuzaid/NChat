@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import { loginSchema, signupSchema } from '../utils/validation';
 import {
   emailExistsQuery,
+  getUserById,
   getUserDataQuery,
   signupQuery,
+  updateUserAvatar,
 } from '../database/query';
 import CustomError from '../utils/customError';
 import bcrypt, { compare } from 'bcrypt';
@@ -22,21 +24,25 @@ export const loginController = (
     id: '',
     username: '',
     email: '',
+    isAvatarImageSet: false,
+    avatarImage: '',
   };
 
   loginSchema
     .validateAsync({ password, username })
     .then((data) => getUserDataQuery(data.username))
     .then(({ rows }) => {
-      if (rows.length <= 0) throw new CustomError(406, 'wrong email');
+      if (rows.length <= 0) throw new CustomError(406, 'wrong email');      
       userInfo = {
         id: rows[0].id,
         username: rows[0].username,
         email: rows[0].email,
+        isAvatarImageSet: rows[0].isavatarimageset,
+        avatarImage: rows[0].avatarimage,
       };
       return compare(password, rows[0].password);
     })
-    .then((isMatch) => {
+    .then((isMatch) => {      
       if (!isMatch) throw new CustomError(406, 'Please enter correct password');
       return signToken({
         email: userInfo.email,
@@ -79,6 +85,14 @@ export const signupController = (
     email: string;
   } = req.body;
 
+  let userInfo = {
+    id: '',
+    username: '',
+    email: '',
+    isAvatarImageSet: false,
+    avatarImage: '',
+  };
+
   signupSchema
     .validateAsync(
       {
@@ -102,7 +116,12 @@ export const signupController = (
         password: hash,
       })
     )
-    .then((data) => data.rows[0])
+    .then((data) => {
+      userInfo = data.rows[0];
+      userInfo.isAvatarImageSet = data.rows[0].isAvatarImageSet;
+      userInfo.avatarImage = data.rows[0].avatarImage;
+      return Promise.resolve(data.rows[0]);
+    })
     .then((row) => signToken(row))
     .then((token) =>
       res
@@ -112,7 +131,7 @@ export const signupController = (
         })
         .json({
           message: 'Created successfully',
-          data: [{ username, email }],
+          data: [userInfo],
         })
     )
     .catch((err: any) => {
@@ -121,5 +140,24 @@ export const signupController = (
       } else {
         next(err);
       }
+    });
+};
+
+export const setAvatarController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.id;
+  const avatarImage = req.body.image;
+  getUserById(+userId)
+    .then((data) => {
+      if (!data.rowCount) throw new CustomError(404, "User doesn't exist!");
+      return Promise.resolve(data.rows[0]);
+    })
+    .then(() => updateUserAvatar({ userId, image: avatarImage }))
+    .then((data) => res.json(data.rows[0]))
+    .catch((err: any) => {
+      console.log(err, userId);
     });
 };

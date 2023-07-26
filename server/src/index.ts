@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { loginController, signupController } from './controllers';
+import { loginController, setAvatarController, signupController } from './controllers';
 
 const app = express();
 require('dotenv').config();
@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/api/multiavatar', async (req, res) => {
   const apiUrl = `https://api.multiavatar.com/4645646/${Math.round(
     Math.random() * 1000
-  )}?apikey=DAa6teh0jXM4lL`;
+  )}?apikey=${process.env.API_KEY}`;
   const imageResponse = await axios(apiUrl, {
     method: 'GET',
     headers: {
@@ -26,6 +26,7 @@ app.get('/api/multiavatar', async (req, res) => {
 
 app.post('/api/auth/login', loginController);
 app.post('/api/auth/register', signupController);
+app.post('/api/auth/setAvatar/:id', setAvatarController);
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on http://localhost:${process.env.PORT}`)

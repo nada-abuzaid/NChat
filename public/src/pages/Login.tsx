@@ -24,11 +24,11 @@ export default function Login() {
     password: "",
   });
 
-  useEffect(() => {
-    if (localStorage.getItem(import.meta.env.REACT_APP_LOCALHOST_KEY!)) {
+  useEffect(() => {    
+    if (localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY!)) {
       navigate("/");
     }
-  }, [navigate]);
+  }, []);
 
   const handleChange = (event: any) => {
     setValues({ ...values, [event.target.name]: event.target.value });
@@ -62,14 +62,14 @@ export default function Login() {
         password,
       });
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions as any);
+      if (!data.data.length) {
+        toast.error(data.message, toastOptions as any);
       }
 
-      if (data.status === true) {
+      if (data.data.length) {      
         localStorage.setItem(
-          import.meta.env.REACT_APP_LOCALHOST_KEY!,
-          JSON.stringify(data.user)
+          import.meta.env.VITE_LOCALHOST_KEY!,
+          JSON.stringify(data.data)
         );
         navigate("/");
       }

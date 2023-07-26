@@ -2,12 +2,11 @@
 import { useEffect, useState } from 'react';
 import { Container } from './styled';
 import axios from 'axios';
-// import { Buffer } from 'buffer';
 import loader from '../assets/loader.gif';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import { setAvatarRoute } from '../utils/APIRoutes';
+import { SET_AVATAR } from '../utils/APIRoutes';
 
 export default function SetAvatar() {
   const api = `https://api.multiavatar.com/4645646`;
@@ -23,27 +22,27 @@ export default function SetAvatar() {
     theme: 'dark',
   };
 
-    useEffect(() => {
-      if (!localStorage.getItem(import.meta.env.REACT_APP_LOCALHOST_KEY))
-        navigate('/login');
-    }, [navigate]);
+  useEffect(() => {
+    if (!localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY))
+      navigate('/login');
+  }, [navigate]);
 
   const setProfilePicture = async () => {
     if (selectedAvatar === -1) {
       toast.error('Please select an avatar', toastOptions as any);
     } else {
       const user = await JSON.parse(
-        localStorage.getItem(import.meta.env.REACT_APP_LOCALHOST_KEY)!
+        localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
       );
-      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+      const { data } = await axios.post(`${SET_AVATAR}/${user[0].id}`, {
         image: avatars[selectedAvatar],
-      });
+      });    
 
-      if (data.isSet) {
-        user.isAvatarImageSet = true;
-        user.avatarImage = data.image;
+      if (data.isavatarimageset) {
+        user[0].isAvatarImageSet = true;
+        user[0].avatarImage = data.avatarimage;        
         localStorage.setItem(
-          import.meta.env.REACT_APP_LOCALHOST_KEY,
+          import.meta.env.VITE_LOCALHOST_KEY,
           JSON.stringify(user)
         );
         navigate('/');
@@ -61,12 +60,12 @@ export default function SetAvatar() {
       try {
         const data: any = [];
         for (let i = 0; i < 4; i++) {
-            const response = await fetch('/api/multiavatar');
-            if (response.ok) {
-              const imageBlob = await response.blob();
-              const imageUrl = URL.createObjectURL(imageBlob);
-              data.push(imageUrl);
-            }
+          const response = await fetch('http://localhost:3000/api/multiavatar');
+          if (response.ok) {
+            const imageBlob = await response.blob();
+            const imageUrl = URL.createObjectURL(imageBlob);
+            data.push(imageUrl);
+          }
         }
         setAvatars(data);
         setIsLoading(false);
