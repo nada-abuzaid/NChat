@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import SetAvatar from '../components/SetAvatar';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Register />,
+  },
+  {
+    path: '/setAvatar',
+    element: <SetAvatar />,
   },
 ]);
 
