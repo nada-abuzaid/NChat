@@ -13,7 +13,7 @@ export default function Register() {
 
   const toastOptions = {
     position: "bottom-right",
-    autoClose: 8000,
+    autoClose: 5000,
     pauseOnHover: true,
     draggable: true,
     theme: "dark",
@@ -40,24 +40,24 @@ export default function Register() {
     const { password, confirmPassword, username, email } = values;
     if (password !== confirmPassword) {
       toast.error(
-        "Password and confirm password should be same.",
+        "Password and confirm password should be same",
         toastOptions as any
       );
       return false;
     } else if (username.length < 3) {
       toast.error(
-        "Username should be greater than 3 characters.",
+        "Username should be greater than 3 characters",
         toastOptions as any
       );
       return false;
     } else if (password.length < 8) {
       toast.error(
-        "Password should be equal or greater than 8 characters.",
+        "Password should be equal or greater than 8 characters",
         toastOptions as any
       );
       return false;
     } else if (email === "") {
-      toast.error("Email is required.", toastOptions as any);
+      toast.error("Email is required", toastOptions as any);
       return false;
     }
 
@@ -122,7 +122,7 @@ export default function Register() {
           />
           <button type="submit">Create User</button>
           <span>
-            Already have an account ? <Link to="/login">Login.</Link>
+            Already have an account ? <Link to="/login">Login</Link>
           </span>
         </form>
       </FormContainer>
