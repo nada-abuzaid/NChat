@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { loginRoute } from "../utils/APIRoutes";
+import { LOGIN } from "../utils/APIRoutes";
 import { FormContainer } from "./styled";
 
 export default function Login() {
@@ -57,7 +57,7 @@ export default function Login() {
     event.preventDefault();
     if (handleValidation()) {
       const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
+      const { data } = await axios.post(LOGIN, {
         username,
         password,
       });
