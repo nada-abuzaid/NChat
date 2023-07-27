@@ -5,8 +5,9 @@ import Logout from './Logout';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { SEND_MESSAGE, RECEIVE_MESSAGE } from '../utils/APIRoutes';
+import User from "../assets/icon.png"
 
-export default function ChatContainer({ currentChat }: any) {
+export default function ChatContainer({ currentChat, socket }: any) {
   const [messages, setMessages] = useState<any>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [arrivalMessage, setArrivalMessage] = useState<any>(null);
@@ -40,28 +41,37 @@ export default function ChatContainer({ currentChat }: any) {
     const data = await JSON.parse(
       localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
     );
-    // socket.current.emit('send-msg', {
-    //   to: currentChat._id,
-    //   from: data._id,
-    //   msg,
-    // });
+
+    socket.current.emit('send-msg', {
+      to: currentChat.id,
+      from: data[0].id,
+      msg,
+    });
+
     await axios.post(SEND_MESSAGE, {
       senderId: data[0].id,
       receiverId: currentChat.id,
       message: msg,
     });
+
     const msgs: any = [...messages];
     msgs.push({ fromSelf: true, message: msg });
     setMessages(msgs);
   };
 
-  // useEffect(() => {
-  //   if (socket.current) {
-  //     socket.current.on('msg-recieve', (msg: any) => {
-  //       setArrivalMessage({ fromSelf: false, message: msg });
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {    
+    if (socket.current.connected) {
+      socket.current.on('msg-receive', (data: any) => {
+        console.log(data, "data from emit");
+        setArrivalMessage({
+          fromSelf: false,
+          message: data.msg,
+          sender_id: data.from,
+          receiver_id: data.to,
+        });
+      });
+    }
+  }, []);
 
   useEffect(() => {
     arrivalMessage && setMessages((prev: any) => [...prev, arrivalMessage]);
@@ -77,8 +87,8 @@ export default function ChatContainer({ currentChat }: any) {
         <div className="user-details">
           <div className="avatar">
             <img
-              src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
-              alt=""
+              src={User}
+              alt="icon"
             />
           </div>
           <div className="username">
@@ -89,7 +99,6 @@ export default function ChatContainer({ currentChat }: any) {
       </div>
       <div className="chat-messages">
         {messages.map((message: any) => {
-          console.log(message);
           const data = JSON.parse(
             localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
           );
@@ -97,7 +106,9 @@ export default function ChatContainer({ currentChat }: any) {
             <div ref={scrollRef} key={uuidv4()}>
               <div
                 className={`message ${
-                  message.sender_id ===  data[0].id || message.fromSelf ? 'sended' : 'recieved'
+                  message.sender_id === data[0].id || message.fromSelf
+                    ? 'sended'
+                    : 'recieved'
                 }`}
               >
                 <div className="content">
