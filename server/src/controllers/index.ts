@@ -4,6 +4,7 @@ import {
   emailExistsQuery,
   getUserById,
   getUserDataQuery,
+  getUsersQuery,
   signupQuery,
   updateUserAvatar,
 } from '../database/query';
@@ -32,7 +33,7 @@ export const loginController = (
     .validateAsync({ password, username })
     .then((data) => getUserDataQuery(data.username))
     .then(({ rows }) => {
-      if (rows.length <= 0) throw new CustomError(406, 'wrong email');      
+      if (rows.length <= 0) throw new CustomError(406, 'wrong email');
       userInfo = {
         id: rows[0].id,
         username: rows[0].username,
@@ -42,7 +43,7 @@ export const loginController = (
       };
       return compare(password, rows[0].password);
     })
-    .then((isMatch) => {      
+    .then((isMatch) => {
       if (!isMatch) throw new CustomError(406, 'Please enter correct password');
       return signToken({
         email: userInfo.email,
@@ -143,10 +144,10 @@ export const signupController = (
     });
 };
 
-export const setAvatarController = async (
+export const setAvatarController = (
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const userId = req.params.id;
   const avatarImage = req.body.image;
@@ -160,4 +161,27 @@ export const setAvatarController = async (
     .catch((err: any) => {
       console.log(err, userId);
     });
+};
+
+export const getUsersController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  getUsersQuery(+id)
+    .then((data) => {
+      res.send(data.rows);
+    })
+    .catch((err) => console.log(err));
+};
+
+export const logoutController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  res.clearCookie('token').json({
+    message: 'Logged out successfully',
+  });
 };

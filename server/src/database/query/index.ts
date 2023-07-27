@@ -52,3 +52,11 @@ export const updateUserAvatar = ({ userId, image }: any) => {
   };
   return connection.query(query);
 };
+
+export const getUsersQuery = (id: number) => {
+  const query: Query = {
+    text: `SELECT id, username, email, isAvatarImageSet, avatarImage FROM users where id != ${id}`,
+    values: [],
+  };
+  return connection.query(query);
+}

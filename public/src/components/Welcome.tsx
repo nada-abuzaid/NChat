@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Robot from '../assets/robot.gif';
+
 export default function Welcome() {
   const [userName, setUserName] = useState('');
+  const [isLoading, setisLoading] = useState(true);
+
   useEffect(() => {
-    async function setData() {
+    const setData = async () => {
       setUserName(
         await JSON.parse(
           localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
-        ).username
+        )[0].username
       );
-    }
+      setisLoading(false);
+    };
     setData();
   }, []);
 
   return (
     <Container>
-      <img src={Robot} alt="" />
-      <h1>
-        Welcome, <span>{userName}!</span>
-      </h1>
+      <img src={Robot} alt="robot" />
+      {!isLoading && (
+        <h1>
+          Welcome, <span>{userName}!</span>
+        </h1>
+      )}
       <h3>Please select a chat to Start messaging.</h3>
     </Container>
   );

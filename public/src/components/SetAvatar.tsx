@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { Container } from './styled';
 import axios from 'axios';
@@ -33,7 +32,7 @@ export default function SetAvatar() {
     } else {
       const user = await JSON.parse(
         localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
-      );
+      );      
       const { data } = await axios.post(`${SET_AVATAR}/${user[0].id}`, {
         image: avatars[selectedAvatar],
       });    
