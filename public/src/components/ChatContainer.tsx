@@ -11,24 +11,27 @@ export default function ChatContainer({ currentChat, socket }: any) {
   const [messages, setMessages] = useState<any>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [arrivalMessage, setArrivalMessage] = useState<any>(null);
+console.log(currentChat);
 
   useEffect(() => {
     const postData = async () => {
       const data = await JSON.parse(
         localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
       );
-      const response = await axios.post(RECEIVE_MESSAGE, {
+      if(currentChat.length){
+        const response = await axios.post(RECEIVE_MESSAGE, {
         senderId: data[0].id,
         receiverId: currentChat.id,
       });
       setMessages(response.data);
+    }
     };
     postData();
   }, [currentChat]);
 
   useEffect(() => {
     const getCurrentChat = async () => {
-      if (currentChat) {
+      if (currentChat.length) {
         await JSON.parse(
           localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
         ).id;
