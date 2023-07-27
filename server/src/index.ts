@@ -1,7 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { getMessagesController, getUsersController, insertMessageController, loginController, logoutController, setAvatarController, signupController } from './controllers';
+import { Server as socketIO } from 'socket.io';
+import {
+  getMessagesController,
+  getUsersController,
+  insertMessageController,
+  loginController,
+  logoutController,
+  setAvatarController,
+  signupController,
+} from './controllers';
 
 const app = express();
 require('dotenv').config();
@@ -35,3 +44,31 @@ app.post('/api/messages', getMessagesController);
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on http://localhost:${process.env.PORT}`)
 );
+
+const io = new socketIO(server, {
+  cors: {
+    origin: true,
+    credentials: true,
+  },
+});
+
+const onlineUsers: Map<string, string> = new Map();
+let chatSocket;
+
+io.on('connection', (socket) => {
+  chatSocket = socket;
+  socket.on('add-user', (userId) => {
+    console.log(userId);
+    
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on('send-msg', (data) => {
+    
+    const sendUserSocket = onlineUsers.get(data.to);
+    console.log(data.to, onlineUsers, sendUserSocket);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit('msg-receive', data);
+    }
+  });
+});
