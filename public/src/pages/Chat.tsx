@@ -7,13 +7,6 @@ import ChatContainer from '../components/ChatContainer';
 import Contacts from '../components/Contacts';
 import Welcome from '../components/Welcome';
 
-//   useEffect(() => {
-//     if (currentUser) {
-//       socket.current = io(host);
-//       socket.current.emit('add-user', currentUser._id);
-//     }
-//   }, [currentUser]);
-
 export const Chat = () => {
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState<any>([]);
@@ -49,6 +42,13 @@ export const Chat = () => {
     };
     fetchData();
   }, [currentUser]);
+
+  //   useEffect(() => {
+  //   if (currentUser) {
+  //     socket.current = io(host);
+  //     socket.current.emit('add-user', currentUser._id);
+  //   }
+  // }, [currentUser]);
 
   const handleChatChange = (chat: any) => {
     setCurrentChat(chat);

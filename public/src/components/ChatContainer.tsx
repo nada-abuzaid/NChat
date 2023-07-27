@@ -4,74 +4,72 @@ import ChatInput from './ChatInput';
 import Logout from './Logout';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { sendMessageRoute, recieveMessageRoute } from '../utils/APIRoutes';
+import { SEND_MESSAGE, RECEIVE_MESSAGE } from '../utils/APIRoutes';
 
 export default function ChatContainer({ currentChat }: any) {
-  const [messages, setMessages] = useState([
-    {
-      fromSelf: false,
-      message: '',
-    },
-  ]);
-  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [messages, setMessages] = useState<any>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [arrivalMessage, setArrivalMessage] = useState<any>(null);
 
-  // useEffect(() => {
-  //   const sendData = async () => {
-  //     const data = await JSON.parse(
-  //       localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
-  //     );
-  //     const response = await axios.post(recieveMessageRoute, {
-  //       from: data.id,
-  //       to: currentChat.id,
-  //     });
-  //     setMessages(response.data);
-  //   };
-  //   sendData();
-  // }, [currentChat]);
+  useEffect(() => {
+    const postData = async () => {
+      const data = await JSON.parse(
+        localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
+      );
+      const response = await axios.post(RECEIVE_MESSAGE, {
+        senderId: data[0].id,
+        receiverId: currentChat.id,
+      });
+      setMessages(response.data);
+    };
+    postData();
+  }, [currentChat]);
 
-  // useEffect(() => {
-  //   const getCurrentChat = async () => {
-  //     if (currentChat) {
-  //       await JSON.parse(
-  //         localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
-  //       ).id;
-  //     }
-  //   };
-  //   getCurrentChat();
-  // }, [currentChat]);
+  useEffect(() => {
+    const getCurrentChat = async () => {
+      if (currentChat) {
+        await JSON.parse(
+          localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
+        ).id;
+      }
+    };
+    getCurrentChat();
+  }, [currentChat]);
 
   const handleSendMsg = async (msg: any) => {
     const data = await JSON.parse(
       localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
     );
-    }
-  //   await axios.post(sendMessageRoute, {
-  //     from: data._id,
-  //     to: currentChat._id,
-  //     message: msg,
-  //   });
-
-  //   const msgs = [...messages];
-  //   msgs.push({ fromSelf: true, message: msg });
-  //   setMessages(msgs);
-  // };
+    // socket.current.emit('send-msg', {
+    //   to: currentChat._id,
+    //   from: data._id,
+    //   msg,
+    // });
+    await axios.post(SEND_MESSAGE, {
+      senderId: data[0].id,
+      receiverId: currentChat.id,
+      message: msg,
+    });
+    const msgs: any = [...messages];
+    msgs.push({ fromSelf: true, message: msg });
+    setMessages(msgs);
+  };
 
   // useEffect(() => {
   //   if (socket.current) {
   //     socket.current.on('msg-recieve', (msg: any) => {
-  //       setArrivalMessage({ fromSelf: false, message: msg } as any);
+  //       setArrivalMessage({ fromSelf: false, message: msg });
   //     });
   //   }
   // }, []);
 
-  // useEffect(() => {
-  //   arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
-  // }, [arrivalMessage]);
+  useEffect(() => {
+    arrivalMessage && setMessages((prev: any) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
 
-  // useEffect(() => {
-  //   scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-  // }, [messages]);
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <ChatContainerStyled>
@@ -79,7 +77,7 @@ export default function ChatContainer({ currentChat }: any) {
         <div className="user-details">
           <div className="avatar">
             <img
-              src={currentChat.avatarImage}
+              src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
               alt=""
             />
           </div>
@@ -90,21 +88,25 @@ export default function ChatContainer({ currentChat }: any) {
         <Logout />
       </div>
       <div className="chat-messages">
-        {/* {messages.map((message) => {
+        {messages.map((message: any) => {
+          console.log(message);
+          const data = JSON.parse(
+            localStorage.getItem(import.meta.env.VITE_LOCALHOST_KEY)!
+          );
           return (
             <div ref={scrollRef} key={uuidv4()}>
               <div
                 className={`message ${
-                  message.fromSelf ? 'sended' : 'recieved'
+                  message.sender_id ===  data[0].id || message.fromSelf ? 'sended' : 'recieved'
                 }`}
               >
-                <div className="content ">
+                <div className="content">
                   <p>{message.message}</p>
                 </div>
               </div>
             </div>
           );
-        })} */}
+        })}
       </div>
       <ChatInput handleSendMsg={handleSendMsg} />
     </ChatContainerStyled>

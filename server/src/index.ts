@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { getUsersController, loginController, logoutController, setAvatarController, signupController } from './controllers';
+import { getMessagesController, getUsersController, insertMessageController, loginController, logoutController, setAvatarController, signupController } from './controllers';
 
 const app = express();
 require('dotenv').config();
@@ -28,7 +28,9 @@ app.post('/api/auth/login', loginController);
 app.post('/api/auth/register', signupController);
 app.post('/api/auth/setAvatar/:id', setAvatarController);
 app.get('/api/auth/users/:id', getUsersController);
-app.get('/api/auth/logout', logoutController)
+app.get('/api/auth/logout', logoutController);
+app.post('/api/messages/message', insertMessageController);
+app.post('/api/messages', getMessagesController);
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on http://localhost:${process.env.PORT}`)

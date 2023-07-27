@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import { loginSchema, signupSchema } from '../utils/validation';
 import {
   emailExistsQuery,
+  getMessagesQuery,
   getUserById,
   getUserDataQuery,
   getUsersQuery,
+  insertMessageQuery,
   signupQuery,
   updateUserAvatar,
 } from '../database/query';
@@ -185,3 +187,29 @@ export const logoutController = (
     message: 'Logged out successfully',
   });
 };
+
+export const insertMessageController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { senderId, receiverId, message } = req.body;
+  insertMessageQuery(senderId, receiverId, message)
+    .then((data) => {
+      res.send(data.rows);
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getMessagesController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { senderId, receiverId } = req.body;  
+  getMessagesQuery(senderId, receiverId)
+    .then((data) => {
+      res.send(data.rows);
+    })
+    .catch((err) => console.log(err));
+}

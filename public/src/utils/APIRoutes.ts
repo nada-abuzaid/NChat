@@ -4,5 +4,5 @@ export const REGISTER = `${HOST}/api/auth/register`;
 export const SET_AVATAR = `${HOST}/api/auth/setAvatar`;
 export const ALL_USERS = `${HOST}/api/auth/users`;
 export const LOGOUT = `${HOST}/api/auth/logout`;
-export const sendMessageRoute = `${HOST}/api/messages/addmsg`;
-export const recieveMessageRoute = `${HOST}/api/messages/getmsg`;
+export const SEND_MESSAGE = `${HOST}/api/messages/message`;
+export const RECEIVE_MESSAGE = `${HOST}/api/messages`;

@@ -249,11 +249,12 @@ export const ChatContainer = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2rem;
+    padding: 0.2rem;
+    margin: 0 2rem;
     .user-details {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.4rem;
       .avatar {
         img {
           height: 3rem;
